@@ -62,17 +62,17 @@ pipeline {
                 }
             }
         }
-        // stage('Cleanup') {
-        //     steps {
-        //         // End the bisect process and clean up the environment
-        //         sh 'git bisect reset'
-        //     }
-        // }
+        stage('Cleanup') {
+            steps {
+                // End the bisect process and clean up the environment
+                sh 'git bisect reset'
+            }
+        }
     }
-    // post {
-    //     always {
-    //         // Clean up workspace after the pipeline is done
-    //         cleanWs()
-    //     }
-    // }
+    post {
+        always {
+            // Clean up workspace after the pipeline is done
+            cleanWs()
+        }
+    }
 }
