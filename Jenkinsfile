@@ -1,24 +1,31 @@
 pipeline {
     agent any
-    maven 'DHT_MVN' 
-    jdk 'DHT_SENSE' 
+    tools { 
+        maven 'DHT_MVN' 
+        jdk 'DHT_SENSE' 
+    }
     environment {
         // Set the known good and bad commits
         GOOD_COMMIT = '34d31973a0cc1f3d77cd5038fc9c01eeba7ec183'
         BAD_COMMIT = '26438de182f7a00147b5e53e9408a3c3745ca509'
     }
     stages {
+        stage('Checkout') {
+            steps {
+                git(url: 'https://github.com/riyapatel25/maven-samples-A6', branch: 'master')
+            }
+        }
         stage('Setup Bisect') {
             steps {
                 script {
                     // Ensure we're on the right branch and the repo is up to date
                     sh 'git checkout master'
                     sh 'git pull'
-                    
+
                     // Start bisect process
                     sh 'git bisect start'
-                    sh "git bisect bad ${BAD_COMMIT}"
-                    sh "git bisect good ${GOOD_COMMIT}"
+                    sh "git bisect bad ${env.BAD_COMMIT}"
+                    sh "git bisect good ${env.GOOD_COMMIT}"
                 }
             }
         }
@@ -44,7 +51,7 @@ pipeline {
                         }
                         
                         // Check if the bisect process has found the first bad commit
-                        def bisectStatus = sh(script: "git bisect status", returnStdout: true).trim()
+                        def bisectStatus = sh(script: "git bisect log", returnStdout: true).trim()
                         if (bisectStatus.contains("is the first bad commit")) {
                             echo bisectStatus
                             break
