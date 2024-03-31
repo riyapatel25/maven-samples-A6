@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Continues until the bisect process is complete
-                    while (true) {
+                   while (true) {
                         def result = sh(script: 'mvn clean test', returnStatus: true)
                         if (result == 0) {
                             sh 'git bisect good'
