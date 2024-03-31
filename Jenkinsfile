@@ -43,6 +43,8 @@ pipeline {
                       // Break the loop if "git bisect log" contains the "is the first bad commit" message
                       if (bisectOutput.contains("first bad commit")) {
                           echo "Bisect completed."
+                          echo "Bisect identified the first bad commit: ${bisectStatus.split()[1]}"
+
                           break
                       }
                         
@@ -60,17 +62,17 @@ pipeline {
                 }
             }
         }
-        stage('Cleanup') {
-            steps {
-                // End the bisect process and clean up the environment
-                sh 'git bisect reset'
-            }
-        }
+        // stage('Cleanup') {
+        //     steps {
+        //         // End the bisect process and clean up the environment
+        //         sh 'git bisect reset'
+        //     }
+        // }
     }
-    post {
-        always {
-            // Clean up workspace after the pipeline is done
-            cleanWs()
-        }
-    }
+    // post {
+    //     always {
+    //         // Clean up workspace after the pipeline is done
+    //         cleanWs()
+    //     }
+    // }
 }
