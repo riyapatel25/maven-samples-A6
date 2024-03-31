@@ -43,8 +43,6 @@ pipeline {
                       // Break the loop if "git bisect log" contains the "is the first bad commit" message
                       if (bisectOutput.contains("first bad commit")) {
                           echo "Bisect completed."
-                          echo "Bisect identified the first bad commit: ${bisectStatus.split()[1]}"
-
                           break
                       }
                         
