@@ -24,32 +24,42 @@ pipeline {
                 }
             }
         }
-       stage('Run Bisect') {
-    steps {
-        script {
-            // Continues until the bisect process is complete
-            while (true) {
-                def result = sh(script: 'mvn clean test', returnStatus: true)
-                if (result == 0) {
-                    sh 'git bisect good'
-                } else {
-                    sh 'git bisect bad'
-                }
+        stage('Run Bisect') {
+            steps {
+                script {
+                    // Continues until the bisect process is complete
+                    while (true) {
+                        def result = sh(script: 'mvn clean test', returnStatus: true)
+                        if (result == 0) {
+                            sh 'git bisect good'
+                        } else {
+                            sh 'git bisect bad'
+                        }
 
-                // Detect if git bisect is done by checking the output message
-                def bisectOutput = sh(script: "git bisect log", returnStdout: true).trim()
-                echo bisectOutput // Log output for diagnosis
+                              // Detect if git bisect is done by checking the output message
+                      def bisectOutput = sh(script: "git bisect log", returnStdout: true).trim()
+                      echo bisectOutput // Log output for diagnosis
 
-                // Break the loop if "git bisect log" contains the "is the first bad commit" message
-                if (bisectOutput.contains("first bad commit")) {
-                    echo "Bisect completed."
-                    break
+                      // Break the loop if "git bisect log" contains the "is the first bad commit" message
+                      if (bisectOutput.contains("first bad commit")) {
+                          echo "Bisect completed."
+                          break
+                      }
+                        
+                        // Detect if git bisect is done by checking for the exit code
+                        try {
+                            sh 'git bisect log' // This line is just for logging purposes.
+                        } catch (Exception e) {
+                            // Break the loop if git bisect is finished.
+                            if (e.getMessage().contains("exit code 0")) {
+                                echo "Bisect completed."
+                                break
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
         stage('Cleanup') {
             steps {
                 // End the bisect process and clean up the environment
