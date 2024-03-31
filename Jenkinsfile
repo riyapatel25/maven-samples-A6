@@ -1,5 +1,7 @@
 pipeline {
     agent any
+    maven 'DHT_MVN' 
+    jdk 'DHT_SENSE' 
     environment {
         // Set the known good and bad commits
         GOOD_COMMIT = '34d31973a0cc1f3d77cd5038fc9c01eeba7ec183'
